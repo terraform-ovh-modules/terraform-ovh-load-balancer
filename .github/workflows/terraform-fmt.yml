@@ -1,0 +1,30 @@
+name: Terraform Format
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  fmt:
+    name: Check Terraform Formatting
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: 1.5.0
+
+      - name: Terraform Format Check
+        run: terraform fmt -check -recursive
+
+      - name: Show formatting diff if failed
+        if: failure()
+        run: |
+          echo "The following files need formatting:"
+          terraform fmt -check -recursive -diff
